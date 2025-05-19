@@ -1,46 +1,240 @@
-import logoDark from "./logo-dark.svg";
-import logoLight from "./logo-light.svg";
+import { useMemo, useState } from 'react';
+import { NavbarGen } from '~/components/navbar-gen';
+import { Link } from 'react-router';
+import bg from "../images/bg3.png";
+
+/* ******** Afaka alana fa données statiques ireto ******** */
+const jobsTest = [
+  {
+    id: 1,
+    title: 'Développeur React',
+    description: 'Appli front-end en React.',
+    company: 'TechCorp',
+    category: 'Développement Web',
+    location: 'Freelance',
+    budget: 400,
+    experience: 'Intermédiaire',
+    postedAt: '1min',
+  },
+  {
+    id: 2,
+    title: 'Designer UI/UX',
+    description: 'Conception d’une UI mobile.',
+    company: 'Designify',
+    category: 'Design',
+    location: 'Sur site',
+    budget: 200,
+    experience: 'Débutant',
+    postedAt: '2j',
+  },
+  {
+    id: 3,
+    title: 'Rédacteur SEO',
+    description: 'Contenu optimisé pour moteurs de recherche.',
+    company: 'ContentLab',
+    category: 'Marketing',
+    location: 'Freelance',
+    budget: 150,
+    experience: 'Débutant',
+    postedAt: '3j',
+  },
+  {
+    id: 4,
+    title: 'DevOps',
+    description: 'CI/CD, monitoring et cloud infrastructure.',
+    company: 'InfraPro',
+    category: 'Développement Web',
+    location: 'Sur site',
+    budget: 850,
+    experience: 'Expert',
+    postedAt: '1 mois',
+  },
+  {
+    id: 5,
+    title: 'Développeur Full Stack',
+    description: 'Node.js + React',
+    company: 'WebGen',
+    category: 'Développement Web',
+    location: 'Freelance',
+    budget: 600,
+    experience: 'Intermédiaire',
+    postedAt: '3j',
+  },
+];
 
 export function Welcome() {
+  const [category, setCategory] = useState('');
+  const [location, setLocation] = useState('');
+  const [budgetMin, setBudgetMin] = useState('');
+  const [budgetMax, setBudgetMax] = useState('');
+  const [experiences, setExperiences] = useState<string[]>([]);
+  const [sortBy, setSortBy] = useState('recent');
+
+  // Filtrer des expériences
+  const toggleExperience = (level: string) => {
+    setExperiences((prev) =>
+      prev.includes(level) ? prev.filter((l) => l !== level) : [...prev, level]
+    );
+  };
+
+  // Filtrage des données
+  const filteredJobs = useMemo(() => {
+    let data = [...jobsTest];
+
+    
+    if (category) data = data.filter((job) => job.category === category);
+    if (location) data = data.filter((job) => job.location === location);
+    if (budgetMin) data = data.filter((job) => job.budget >= Number(budgetMin));
+    if (budgetMax) data = data.filter((job) => job.budget <= Number(budgetMax));
+    if (experiences.length)
+      data = data.filter((job) => experiences.includes(job.experience));
+
+    // Apply sorting
+    if (sortBy === 'budgetAsc') data.sort((a, b) => a.budget - b.budget);
+    if (sortBy === 'budgetDesc') data.sort((a, b) => b.budget - a.budget);
+
+    return data;
+  }, [category, location, budgetMin, budgetMax, experiences, sortBy]);
+
   return (
-    <main className="flex items-center justify-center pt-16 pb-4">
-      <div className="flex-1 flex flex-col items-center gap-16 min-h-0">
-        <header className="flex flex-col items-center gap-9">
-          <div className="w-[500px] max-w-[100vw] p-4">
-            <img
-              src={logoLight}
-              alt="React Router"
-              className="block w-full dark:hidden"
-            />
-            <img
-              src={logoDark}
-              alt="React Router"
-              className="hidden w-full dark:block"
-            />
+    <main className="flex flex-col items-center pt-2 pb-4 bg-gray-100 font-sans">
+      <NavbarGen />
+
+      {/* Welcome Panel */}
+<div
+  className=" bg-cover bg-center  py-10 px-6 rounded-md mb-6"
+  style={{
+    backgroundImage: `url(${bg})`, // Change path as needed
+    minHeight: '200px',
+    width: '90%',
+  }}
+>
+  <div className="max-w-7xl mx-auto text-center ">
+    <h1 className="text-3xl md:text-4xl font-bold mb-2 drop-shadow-lg text-white">
+      Bienvenue sur <span className="text-yellow-300">E-tady</span>
+    </h1>
+    <p className="text-lg md:text-xl text-gray-100 text-black drop-shadow-lg">
+      Connecter les talents et les opportunités en un seul clic.
+    </p>
+  </div>
+</div>
+
+      <div className="flex w-full px-8 py-6 gap-6 max-w-7xl">
+        {/* Filters */}
+        <aside className="w-1/4 bg-white rounded-md shadow-md p-5">
+          <h2 className="text-xl font-semibold mb-4">Filtres</h2>
+
+          <div className="mb-4">
+            <label className="block text-sm font-medium mb-1">Catégorie</label>
+            <select
+              className="w-full border rounded px-3 py-2"
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+            >
+              <option value="">Toutes</option>
+              <option>Développement Web</option>
+              <option>Design</option>
+              <option>Marketing</option>
+            </select>
           </div>
-        </header>
-        <div className="max-w-[300px] w-full space-y-6 px-4">
-          <nav className="rounded-3xl border border-gray-200 p-6 dark:border-gray-700 space-y-4">
-            <p className="leading-6 text-gray-700 dark:text-gray-200 text-center">
-              What&apos;s next?
-            </p>
-            <ul>
-              {resources.map(({ href, text, icon }) => (
-                <li key={href}>
-                  <a
-                    className="group flex items-center gap-3 self-stretch p-3 leading-normal text-blue-700 hover:underline dark:text-blue-500"
-                    href={href}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    {icon}
-                    {text}
-                  </a>
-                </li>
+
+          <div className="mb-4">
+            <label className="block text-sm font-medium mb-1">Localisation</label>
+            <select
+              className="w-full border rounded px-3 py-2"
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+            >
+              <option value="">Toutes</option>
+              <option>Freelance</option>
+              <option>Sur site</option>
+            </select>
+          </div>
+
+          <div className="mb-4">
+            <label className="block text-sm font-medium mb-1">Budget (€)</label>
+            <div className="flex gap-2">
+              <input
+                type="number"
+                placeholder="Min"
+                className="w-1/2 border rounded px-2 py-1"
+                value={budgetMin}
+                onChange={(e) => setBudgetMin(e.target.value)}
+              />
+              <input
+                type="number"
+                placeholder="Max"
+                className="w-1/2 border rounded px-2 py-1"
+                value={budgetMax}
+                onChange={(e) => setBudgetMax(e.target.value)}
+              />
+            </div>
+          </div>
+
+          <div className="mb-4">
+            <label className="block text-sm font-medium mb-2">Niveau d'expérience</label>
+            <div className="space-y-1 text-sm">
+              {['Débutant', 'Intermédiaire', 'Expert'].map((level) => (
+                <label key={level} className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={experiences.includes(level)}
+                    onChange={() => toggleExperience(level)}
+                  />
+                  {level}
+                </label>
               ))}
-            </ul>
-          </nav>
-        </div>
+            </div>
+          </div>
+        </aside>
+
+        {/* Job List */}
+        <section className="flex-1">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-2xl font-semibold">Offres d'emploi</h2>
+            <div>
+              <label className="text-sm mr-2">Trier par:</label>
+              <select
+                className="border rounded px-2 py-1 text-sm"
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+              >
+                <option value="recent">Plus récent</option>
+                <option value="budgetAsc">Budget croissant</option>
+                <option value="budgetDesc">Budget décroissant</option>
+              </select>
+            </div>
+          </div>
+
+          {filteredJobs.length === 0 ? (
+            <p className="text-gray-500">Aucune offre ne correspond aux filtres sélectionnés.</p>
+          ) : (
+            filteredJobs.map((job) => (
+              <div
+                key={job.id}
+                className="bg-white p-5 mb-4 rounded-md shadow hover:shadow-md transition"
+              >
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h3 className="text-xl font-bold text-gray-800">{job.title}</h3>
+                    <p className="text-sm text-gray-600 mt-1">{job.description}</p>
+                    <div className="text-sm text-gray-500 mt-2">
+                      <strong>Entreprise:</strong> {job.company} | <strong>Budget:</strong> €{job.budget} |{' '}
+                      <strong>Expérience:</strong> {job.experience}
+                    </div>
+                    <div className="text-xs text-gray-400 mt-1">Posté il y a {job.postedAt}</div>
+                  </div>
+                  <Link
+                    to={`employe/jobDetail/${job.id}`}
+                    className="mt-1 px-4 py-2 text-sm  text-white rounded hover:bg-yellow-700" style={{ backgroundColor: '#0a8051' }}
+                  >
+                    Voir détail
+                  </Link>
+                </div>
+              </div>
+            ))
+          )}
+        </section>
       </div>
     </main>
   );
